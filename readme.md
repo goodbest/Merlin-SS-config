@@ -29,7 +29,7 @@
 
 ### 配置DNSMASQ
   - 修改/jffs/configs/dnsmasq.conf.add
-  - 把 ss-tunnle、chinadns 路由器 DNSMASQ的上游
+  - 把 ss-tunnle、chinadns 当做路由器 DNSMASQ服务的上游
   - white domain采用local DNS解析，black domain采用remote DNS解析，其余采用chinadns解析
   - 可以由脚本生成，参见 https://github.com/goodbest/Merlin-SS-config
 
