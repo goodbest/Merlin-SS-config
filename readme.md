@@ -47,6 +47,10 @@
 ## 配置DDNS
   - 在/jffs/scripts/ddns-start 加入获取命令
   - 具体看 https://github.com/RMerl/asuswrt-merlin/wiki/Custom-DDNS
+
+## 安装Aria2
+  - opkg install aria2c ca-certificates
+  - modify /opt/etc/aria2c.conf
   
 # 其他记录
 ## entware启动任务

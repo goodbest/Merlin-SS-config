@@ -50,6 +50,15 @@ def outputIPtable(outputFileName='china_iptable.sh', ssip=['1.1.1.1'], localport
     
     outputFile.close()
 
+def outputIPtableStop(outputFileName='ss-stop.sh', china_ipset='china_ipset'):
+    outputFile=open(outputFileName,'w')
+    outputFile.write('#!/bin/sh\n')
+    outputFile.write('iptables -t nat -F SHADOWSOCKS\n')
+    outputFile.write('iptables -t nat -F PREROUTING\n')
+    outputFile.write('iptables -t nat -X SHADOWSOCKS\n')
+    outputFile.write('ipset --destroy %s\n' %china_ipset)
+    outputFile.close()
+    
 def outputIPSET(outputFileName='china_ipset_init.sh', ipsetName='china_ipset'):
     outputFile=open(outputFileName,'w')
     outputFile.write('#!/bin/sh\n')
@@ -81,7 +90,7 @@ def outputDNSMASQ(outputFileName='dnsmasq.conf.add', localdns='114.114.114.114',
 outputIPSET()
 outputIPtable(ssip=['your.ip.address.here', 'and.add.another.here'])
 outputDNSMASQ()
-
+outputIPtableStop()
 
 
         
