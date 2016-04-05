@@ -33,10 +33,16 @@
   - white domain采用local DNS解析，black domain采用remote DNS解析，其余采用chinadns解析
   - 可以由脚本生成，参见 https://github.com/goodbest/Merlin-SS-config
 
+### 配置ipset
+  - 国内ip走直连，因此使用ipset来加速之后iptable的执行效率
+  - 可以由脚本生成初始化脚本，参见 https://github.com/goodbest/Merlin-SS-config
+  - 在路由器执行一次 `china_ipset_init.sh` 后，生成`china_ipset.conf`文件供之后读取
+  
 ### 配置iptable
-  - 国内ip走直连，国外ip走ss-redir
-  - 文件名修改为`nat-start`, `chmod a+x`，并放入/jffs/scripts中
+  - 国内ip走直连(根据ipset执行)，国外ip走ss-redir
   - 可以由脚本生成，参见 https://github.com/goodbest/Merlin-SS-config
+  - 把`china_iptable`文件名修改为`nat-start`, `chmod a+x`，并放入/jffs/scripts中
+
   
 ## 配置DDNS
   - 在/jffs/scripts/ddns-start 加入获取命令
@@ -63,3 +69,7 @@
   - https://github.com/RMerl/asuswrt-merlin/wiki
   - https://github.com/koolshare/koolshare.github.io/tree/master/shadowsocks/shadowsocks
   - https://koolshare.cn/forum.php?mod=viewthread&tid=2613
+  - https://hong.im/2014/07/08/use-ipset-with-shadowsocks-on-openwrt/
+  - http://manpages.ubuntu.com/manpages/lucid/man8/ipset.8.html
+  - http://www.linuxjournal.com/content/advanced-firewall-configurations-ipset
+  - http://felixqu.com/2015/07/27/tomato-arm-jffs-entware-shadowsocks/

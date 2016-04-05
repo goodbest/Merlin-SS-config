@@ -25,7 +25,7 @@ def fetch_cnip_data(apnicfile=''):
     
 
 
-def outputIPtable(outputFileName='china_iptable.sh', ssip=['1.1.1.1'], localport=1080):
+def outputIPtable(outputFileName='china_iptable.sh', ssip=['1.1.1.1'], localport=1080, china_ipset='china_ipset'):
     outputFile=open(outputFileName,'w')
     outputFile.write('#!/bin/sh\n')
     outputFile.write('iptables -t nat -N SHADOWSOCKS\n')
@@ -40,10 +40,9 @@ def outputIPtable(outputFileName='china_iptable.sh', ssip=['1.1.1.1'], localport
         outputFile.write('iptables -t nat -A SHADOWSOCKS -d %s -j RETURN\n' %ip)
     
     outputFile.write('\n#CN IP\n')
-    cnCIDR=fetch_cnip_data()
-    for ip in cnCIDR:
-        outputFile.write('iptables -t nat -A SHADOWSOCKS -d %s -j RETURN\n' %ip)
-        
+    outputFile.write('ipset -R </jffs/configs/china_ipset.conf\n')
+    outputFile.write('iptables -t nat -A SHADOWSOCKS -p tcp -m set --match-set %s dst -j RETURN\n' %china_ipset)
+
     outputFile.write('\n#Redirect Other IP\n')
     outputFile.write('iptables -t nat -A SHADOWSOCKS -p tcp -j REDIRECT --to-ports %s\n' %localport)
     outputFile.write('\n#Apply\n')
@@ -51,6 +50,18 @@ def outputIPtable(outputFileName='china_iptable.sh', ssip=['1.1.1.1'], localport
     
     outputFile.close()
 
+def outputIPSET(outputFileName='china_ipset_init.sh', ipsetName='china_ipset'):
+    outputFile=open(outputFileName,'w')
+    outputFile.write('#!/bin/sh\n')
+    outputFile.write('ipset -N %s nethash\n' %ipsetName)
+    cnCIDR=fetch_cnip_data()
+    for ip in cnCIDR:
+        outputFile.write('ipset -A %s %s\n' %(ipsetName, ip))
+    
+    outputFile.write('ipset --save %s >/jffs/configs/china_ipset.conf\n' %ipsetName)
+    outputFile.write('ipset --destroy %s\n' %ipsetName)
+    outputFile.close
+    
 def outputDNSMASQ(outputFileName='dnsmasq.conf.add', localdns='114.114.114.114', remotedns='127.0.0.1#1081', chinadns='127.0.0.1#35353' , whiteFile='white.txt', blackFile='black.txt'):
     outputFile=open(outputFileName,'w')
     outputFile.write('no-resolv\n')
@@ -67,8 +78,10 @@ def outputDNSMASQ(outputFileName='dnsmasq.conf.add', localdns='114.114.114.114',
     outputFile.close()
 
 
+outputIPSET()
 outputIPtable(ssip=['your.ip.address.here', 'and.add.another.here'])
 outputDNSMASQ()
+
 
 
         
