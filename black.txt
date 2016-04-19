@@ -35,7 +35,7 @@ imgur.com
 j.mp
 me.com
 t.co
-twimg.com,force-remote-dns
+twimg.com
 v2ex.com
 vimeo.com
 wikipedia.org
