@@ -41,6 +41,7 @@ server=/wikimedia.org/127.0.0.1#1081
 server=/ytimg.com/127.0.0.1#1081
 server=/youtu.be/127.0.0.1#1081
 server=/youtube.com/127.0.0.1#1081
+address=/trailers.apple.com/180.153.225.136
 server=/itunes.apple.com/114.114.114.114
 server=/phobos.apple.com/114.114.114.114
 server=/apple.com/114.114.114.114

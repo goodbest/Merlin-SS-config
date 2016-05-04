@@ -79,6 +79,9 @@ def outputDNSMASQ(outputFileName='generated/dnsmasq.conf.add', localdns='114.114
     for line in black:
         outputFile.write('server=/%s/%s\n' %(line.strip(), remotedns))
     
+    #atv3 trailer
+    outputFile.write('address=/trailers.apple.com/180.153.225.136\n')
+    
     white=open(whiteFile)
     for line in white:
         outputFile.write('server=/%s/%s\n' %(line.strip(), localdns))
