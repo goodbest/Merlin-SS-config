@@ -1,0 +1,10 @@
+#!/bin/sh
+
+curl -k "https://YOUR_SUB.nsupdate.info:YOUR_KEY@ipv4.nsupdate.info/nic/update" >/dev/null 2>&1 &
+curl -X POST https://dnsapi.cn/Record.Ddns -d 'login_token=YOUR_TOEKN&format=json&domain_id=YOUR_DOMAIN_ID&record_id=YOUR_RECORD_ID&sub_domain=home&record_line=默认' >/dev/null 2>&1 &
+
+if [ $? -eq 0 ]; then
+    /sbin/ddns_custom_updated 1
+else
+    /sbin/ddns_custom_updated 0
+fi

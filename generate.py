@@ -25,7 +25,7 @@ def fetch_cnip_data(apnicfile=''):
     
 
 
-def outputIPtable(outputFileName='china_iptable.sh', ssip=['1.1.1.1'], localport=1080, china_ipset='china_ipset'):
+def outputIPtable(outputFileName='generated/china_iptable.sh', ssip=['1.1.1.1'], localport=1080, china_ipset='china_ipset'):
     outputFile=open(outputFileName,'w')
     outputFile.write('#!/bin/sh\n')
     outputFile.write('iptables -t nat -N SHADOWSOCKS\n')
@@ -50,7 +50,7 @@ def outputIPtable(outputFileName='china_iptable.sh', ssip=['1.1.1.1'], localport
     
     outputFile.close()
 
-def outputIPtableStop(outputFileName='ss-stop.sh', china_ipset='china_ipset'):
+def outputIPtableStop(outputFileName='generated/ss-stop.sh', china_ipset='china_ipset'):
     outputFile=open(outputFileName,'w')
     outputFile.write('#!/bin/sh\n')
     outputFile.write('iptables -t nat -F SHADOWSOCKS\n')
@@ -59,7 +59,7 @@ def outputIPtableStop(outputFileName='ss-stop.sh', china_ipset='china_ipset'):
     outputFile.write('ipset --destroy %s\n' %china_ipset)
     outputFile.close()
     
-def outputIPSET(outputFileName='china_ipset_init.sh', ipsetName='china_ipset'):
+def outputIPSET(outputFileName='generated/china_ipset_init.sh', ipsetName='china_ipset'):
     outputFile=open(outputFileName,'w')
     outputFile.write('#!/bin/sh\n')
     outputFile.write('ipset -N %s nethash\n' %ipsetName)
@@ -71,7 +71,7 @@ def outputIPSET(outputFileName='china_ipset_init.sh', ipsetName='china_ipset'):
     outputFile.write('ipset --destroy %s\n' %ipsetName)
     outputFile.close
     
-def outputDNSMASQ(outputFileName='dnsmasq.conf.add', localdns='114.114.114.114', remotedns='127.0.0.1#1081', chinadns='127.0.0.1#35353' , whiteFile='white.txt', blackFile='black.txt'):
+def outputDNSMASQ(outputFileName='generated/dnsmasq.conf.add', localdns='114.114.114.114', remotedns='127.0.0.1#1081', chinadns='127.0.0.1#35353' , whiteFile='white.txt', blackFile='black.txt'):
     outputFile=open(outputFileName,'w')
     outputFile.write('no-resolv\n')
     

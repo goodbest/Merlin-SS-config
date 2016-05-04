@@ -1,0 +1,6 @@
+#!/bin/sh
+#允许WAN连入http
+#iptables -I INPUT -p tcp --destination-port 81 -j ACCEPT
+
+#允许WAN连入https
+iptables -I INPUT -p tcp --destination-port 443 -j ACCEPT

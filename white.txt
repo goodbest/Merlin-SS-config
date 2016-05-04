@@ -1,3 +1,6 @@
+itunes.apple.com
+phobos.apple.com
+apple.com
 10010.com
 115.com
 126.com
@@ -34,7 +37,6 @@ aliyun.com
 aliyuncdn.com
 aliyuncs.com
 anzhi.com
-apple.com
 appsina.com
 baidu.com
 baidupcs.com

@@ -1,0 +1,2 @@
+#!/bin/sh
+cru a AutoRestartProgram "*/1 * * * *" "/opt/bin/services start"
