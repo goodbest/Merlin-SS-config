@@ -48,12 +48,17 @@ def outputIPtable(outputFileName='generated/china_iptable.sh', ssip=['1.1.1.1'],
     outputFile.write('\n#Apply\n')
     outputFile.write('iptables -t nat -A PREROUTING -p tcp -j SHADOWSOCKS\n')
     
+    outputFile.write('\n#Let router itself go through SS\n')
+    outputFile.write('iptables -t nat -A OUTPUT -p tcp -m set --match-set %s dst -j RETURN\n' %china_ipset)
+    outputFile.write('iptables -t nat -A OUTPUT -p tcp -j SHADOWSOCKS\n')
+    
     outputFile.close()
 
 def outputIPtableStop(outputFileName='generated/ss-stop.sh', china_ipset='china_ipset'):
     outputFile=open(outputFileName,'w')
     outputFile.write('#!/bin/sh\n')
     outputFile.write('iptables -t nat -F SHADOWSOCKS\n')
+    outputFile.write('iptables -t nat -F OUTPUT\n')
     outputFile.write('iptables -t nat -F PREROUTING\n')
     outputFile.write('iptables -t nat -X SHADOWSOCKS\n')
     outputFile.write('ipset --destroy %s\n' %china_ipset)
@@ -71,7 +76,7 @@ def outputIPSET(outputFileName='generated/china_ipset_init.sh', ipsetName='china
     outputFile.write('ipset --destroy %s\n' %ipsetName)
     outputFile.close
     
-def outputDNSMASQ(outputFileName='generated/dnsmasq.conf.add', localdns='114.114.114.114', remotedns='127.0.0.1#1081', chinadns='127.0.0.1#35353' , whiteFile='white.txt', blackFile='black.txt'):
+def outputDNSMASQ(outputFileName='generated/dnsmasq.conf.add', localdns='223.5.5.5', remotedns='127.0.0.1#1081', chinadns='127.0.0.1#35353' , whiteFile='white.txt', blackFile='black.txt'):
     outputFile=open(outputFileName,'w')
     outputFile.write('no-resolv\n')
     

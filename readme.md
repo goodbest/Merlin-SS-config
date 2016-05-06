@@ -55,6 +55,7 @@
   - 国内ip走直连(根据ipset执行)，国外ip走ss-redir
   - 可以由脚本生成，参见 https://github.com/goodbest/Merlin-SS-config
   - 把`china_iptable`文件名修改为`nat-start`, `chmod a+x`，并放入/jffs/scripts中
+  - iptable的`OUTPUT`表是设置路由器自身走ss
 
 
 # 其他记录  
@@ -66,6 +67,7 @@
 ## 安装Aria2
   - opkg install aria2c ca-certificates
   - modify /opt/etc/aria2c.conf
+  - 运行在6800端口
   
 ## 安装lighttpd
   - opkg install lighttpd

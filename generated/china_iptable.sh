@@ -24,3 +24,7 @@ iptables -t nat -A SHADOWSOCKS -p tcp -j REDIRECT --to-ports 1080
 
 #Apply
 iptables -t nat -A PREROUTING -p tcp -j SHADOWSOCKS
+
+#Let router itself go through SS
+iptables -t nat -A OUTPUT -p tcp -m set --match-set china_ipset dst -j RETURN
+iptables -t nat -A OUTPUT -p tcp -j SHADOWSOCKS
