@@ -48,7 +48,16 @@ def outputIPtable(outputFileName='generated/china_iptable.sh', ssip=['1.1.1.1'],
     outputFile.write('\n#Apply\n')
     outputFile.write('iptables -t nat -A PREROUTING -p tcp -j SHADOWSOCKS\n')
     
+    #router itself 
     outputFile.write('\n#Let router itself go through SS\n')
+    for ip in ssip:
+        outputFile.write('iptables -t nat -A OUTPUT -d %s -j RETURN\n' %ip)
+    
+    intranetCIDR=['0.0.0.0/8','10.0.0.0/8','127.0.0.0/8','169.254.0.0/16','172.16.0.0/12','192.168.0.0/16','224.0.0.0/4','240.0.0.0/']
+    outputFile.write('\n#Intranet IP\n')
+    for ip in intranetCIDR:
+        outputFile.write('iptables -t nat -A OUTPUT -d %s -j RETURN\n' %ip)
+    
     outputFile.write('iptables -t nat -A OUTPUT -p tcp -m set --match-set %s dst -j RETURN\n' %china_ipset)
     outputFile.write('iptables -t nat -A OUTPUT -p tcp -j SHADOWSOCKS\n')
     
