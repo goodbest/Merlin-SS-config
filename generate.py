@@ -25,42 +25,39 @@ def fetch_cnip_data(apnicfile=''):
     
 
 
-def outputIPtable(outputFileName='generated/china_iptable.sh', ssip=['1.1.1.1'], localport=1080, china_ipset='china_ipset'):
+def outputIPtable(outputFileName='generated/china_iptable.sh', ssipFileName='ssip.txt', localport=1080, china_ipset='china_ipset'):
+    ssip=[]
+    with open(ssipFileName, 'r') as ssipFile:
+        for line in ssipFile:
+            ssip.append(line.strip())
+
+    intranetCIDR=['0.0.0.0/8','10.0.0.0/8','127.0.0.0/8','169.254.0.0/16','172.16.0.0/12','192.168.0.0/16','224.0.0.0/4','240.0.0.0/']
+    
+    
     outputFile=open(outputFileName,'w')
     outputFile.write('#!/bin/sh\n')
     outputFile.write('iptables -t nat -N SHADOWSOCKS\n')
+
+    #Shadowsocks for NAT
+    #OUTPUT for router itself
     
-    outputFile.write('\n#Bypass SS Server IP\n')
-    for ip in ssip:
-        outputFile.write('iptables -t nat -A SHADOWSOCKS -d %s -j RETURN\n' %ip)
+    outputFile.write('\n#Bypass SS and Intranet IP\n')
+    for table in ['SHADOWSOCKS', 'OUTPUT']:
+        for ip in ssip:
+            outputFile.write('iptables -t nat -A %s -d %s -j RETURN\n' %(table, ip))
+        for ip in intranetCIDR:
+            outputFile.write('iptables -t nat -A %s -d %s -j RETURN\n' %(table, ip))
     
-    intranetCIDR=['0.0.0.0/8','10.0.0.0/8','127.0.0.0/8','169.254.0.0/16','172.16.0.0/12','192.168.0.0/16','224.0.0.0/4','240.0.0.0/']
-    outputFile.write('\n#Intranet IP\n')
-    for ip in intranetCIDR:
-        outputFile.write('iptables -t nat -A SHADOWSOCKS -d %s -j RETURN\n' %ip)
-    
-    outputFile.write('\n#CN IP\n')
+    outputFile.write('\n#CN IP load and bypass\n')
     outputFile.write('ipset -R </jffs/configs/china_ipset.conf\n')
     outputFile.write('iptables -t nat -A SHADOWSOCKS -p tcp -m set --match-set %s dst -j RETURN\n' %china_ipset)
-
-    outputFile.write('\n#Redirect Other IP\n')
-    outputFile.write('iptables -t nat -A SHADOWSOCKS -p tcp -j REDIRECT --to-ports %s\n' %localport)
-    outputFile.write('\n#Apply\n')
-    outputFile.write('iptables -t nat -A PREROUTING -p tcp -j SHADOWSOCKS\n')
-    
-    #router itself 
-    outputFile.write('\n#Let router itself go through SS\n')
-    for ip in ssip:
-        outputFile.write('iptables -t nat -A OUTPUT -d %s -j RETURN\n' %ip)
-    
-    intranetCIDR=['0.0.0.0/8','10.0.0.0/8','127.0.0.0/8','169.254.0.0/16','172.16.0.0/12','192.168.0.0/16','224.0.0.0/4','240.0.0.0/']
-    outputFile.write('\n#Intranet IP\n')
-    for ip in intranetCIDR:
-        outputFile.write('iptables -t nat -A OUTPUT -d %s -j RETURN\n' %ip)
-    
     outputFile.write('iptables -t nat -A OUTPUT -p tcp -m set --match-set %s dst -j RETURN\n' %china_ipset)
-    outputFile.write('iptables -t nat -A OUTPUT -p tcp -j SHADOWSOCKS\n')
     
+    outputFile.write('\n#Redirect Other IP\n')
+    outputFile.write('iptables -t nat -A PREROUTING -p tcp -j SHADOWSOCKS\n')
+    outputFile.write('iptables -t nat -A OUTPUT -p tcp -j SHADOWSOCKS\n')
+    outputFile.write('iptables -t nat -A SHADOWSOCKS -p tcp -j REDIRECT --to-ports %s\n' %localport)
+   
     outputFile.close()
 
 def outputIPtableStop(outputFileName='generated/ss-stop.sh', china_ipset='china_ipset'):
@@ -105,7 +102,7 @@ def outputDNSMASQ(outputFileName='generated/dnsmasq.conf.add', localdns='223.5.5
 
 
 outputIPSET()
-outputIPtable(ssip=['your.ip.address.here', 'and.add.another.here'])
+outputIPtable()
 outputDNSMASQ()
 outputIPtableStop()
 
