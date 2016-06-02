@@ -25,7 +25,7 @@ def fetch_cnip_data(apnicfile=''):
     
 
 
-def outputIPtable(outputFileName='generated/china_iptable.sh', ssipFileName='ssip.txt', localport=1080, china_ipset='china_ipset'):
+def outputIPtable(outputFileName='generated/china_iptable.sh', ssipFileName='ssip.txt.example', localport=1080, china_ipset='china_ipset'):
     ssip=[]
     with open(ssipFileName, 'r') as ssipFile:
         for line in ssipFile:
@@ -38,9 +38,8 @@ def outputIPtable(outputFileName='generated/china_iptable.sh', ssipFileName='ssi
     outputFile.write('#!/bin/sh\n')
     outputFile.write('iptables -t nat -N SHADOWSOCKS\n')
 
-    #Shadowsocks for NAT
+    #SHADOWSOCKS for NAT
     #OUTPUT for router itself
-    
     outputFile.write('\n#Bypass SS and Intranet IP\n')
     for table in ['SHADOWSOCKS', 'OUTPUT']:
         for ip in ssip:
@@ -69,7 +68,8 @@ def outputIPtableStop(outputFileName='generated/ss-stop.sh', china_ipset='china_
     outputFile.write('iptables -t nat -X SHADOWSOCKS\n')
     outputFile.write('ipset --destroy %s\n' %china_ipset)
     outputFile.close()
-    
+
+#For ipset version 4
 def outputIPSET(outputFileName='generated/china_ipset_init.sh', ipsetName='china_ipset'):
     outputFile=open(outputFileName,'w')
     outputFile.write('#!/bin/sh\n')
@@ -90,7 +90,7 @@ def outputDNSMASQ(outputFileName='generated/dnsmasq.conf.add', localdns='223.5.5
     for line in black:
         outputFile.write('server=/%s/%s\n' %(line.strip(), remotedns))
     
-    #atv3 trailer
+    #atv3 trailer dns hack
     outputFile.write('address=/trailers.apple.com/180.153.225.136\n')
     
     white=open(whiteFile)
@@ -102,7 +102,7 @@ def outputDNSMASQ(outputFileName='generated/dnsmasq.conf.add', localdns='223.5.5
 
 
 outputIPSET()
-outputIPtable()
+outputIPtable(ssipFileName='ssip.txt.example')
 outputDNSMASQ()
 outputIPtableStop()
 
