@@ -25,7 +25,7 @@ def fetch_cnip_data(apnicfile=''):
     
 
 
-def outputIPtable(outputFileName='generated/china_iptable.sh', ssipFileName='ssip.txt.example', localport=1080, china_ipset='china_ipset'):
+def outputIPtable(outputFileName='generated/china_iptable.sh', ssipFileName='ssip.txt', LanBypassFileName='lan_bypass.txt', localport=1080, china_ipset='china_ipset'):
     ssip=[]
     with open(ssipFileName, 'r') as ssipFile:
         for line in ssipFile:
@@ -33,11 +33,19 @@ def outputIPtable(outputFileName='generated/china_iptable.sh', ssipFileName='ssi
 
     intranetCIDR=['0.0.0.0/8','10.0.0.0/8','127.0.0.0/8','169.254.0.0/16','172.16.0.0/12','192.168.0.0/16','224.0.0.0/4','240.0.0.0/']
     
+    lan_bypass_ip=[]
+    with open(LanBypassFileName, 'r') as LanBypassFile:
+        for line in LanBypassFile:
+            lan_bypass_ip.append(line.strip())
     
     outputFile=open(outputFileName,'w')
     outputFile.write('#!/bin/sh\n')
     outputFile.write('iptables -t nat -N SHADOWSOCKS\n')
-
+    
+    outputFile.write('\n#Bypass LAN IP\n')
+    for ip in lan_bypass_ip:
+        outputFile.write('iptables -t nat -A SHADOWSOCKS -s %s -j RETURN\n' %(ip))
+    
     #SHADOWSOCKS for NAT
     #OUTPUT for router itself
     outputFile.write('\n#Bypass SS and Intranet IP\n')
@@ -102,7 +110,7 @@ def outputDNSMASQ(outputFileName='generated/dnsmasq.conf.add', localdns='223.5.5
 
 
 outputIPSET()
-outputIPtable(ssipFileName='ssip.txt.example')
+outputIPtable()
 outputDNSMASQ()
 outputIPtableStop()
 
