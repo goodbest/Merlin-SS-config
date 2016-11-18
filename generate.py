@@ -40,6 +40,7 @@ def outputIPtable(outputFileName='generated/china_iptable.sh', ssipFileName='ssi
     
     outputFile=open(outputFileName,'w')
     outputFile.write('#!/bin/sh\n')
+    outputFile.write('modprobe xt_set.ko\n')
     outputFile.write('iptables -t nat -N SHADOWSOCKS\n')
     
     outputFile.write('\n#Bypass LAN IP\n')
@@ -56,7 +57,7 @@ def outputIPtable(outputFileName='generated/china_iptable.sh', ssipFileName='ssi
             outputFile.write('iptables -t nat -A %s -d %s -j RETURN\n' %(table, ip))
     
     outputFile.write('\n#CN IP load and bypass\n')
-    outputFile.write('ipset -R </jffs/configs/china_ipset.conf\n')
+    outputFile.write('ipset restore </jffs/configs/china_ipset.conf\n')
     outputFile.write('iptables -t nat -A SHADOWSOCKS -p tcp -m set --match-set %s dst -j RETURN\n' %china_ipset)
     outputFile.write('iptables -t nat -A OUTPUT -p tcp -m set --match-set %s dst -j RETURN\n' %china_ipset)
     
@@ -74,20 +75,20 @@ def outputIPtableStop(outputFileName='generated/ss-stop.sh', china_ipset='china_
     outputFile.write('iptables -t nat -F OUTPUT\n')
     outputFile.write('iptables -t nat -F PREROUTING\n')
     outputFile.write('iptables -t nat -X SHADOWSOCKS\n')
-    outputFile.write('ipset --destroy %s\n' %china_ipset)
+    outputFile.write('ipset destroy %s\n' %china_ipset)
     outputFile.close()
 
-#For ipset version 4
+#For ipset version 6
 def outputIPSET(outputFileName='generated/china_ipset_init.sh', ipsetName='china_ipset'):
     outputFile=open(outputFileName,'w')
     outputFile.write('#!/bin/sh\n')
-    outputFile.write('ipset -N %s nethash\n' %ipsetName)
+    outputFile.write('ipset create %s hash:net\n' %ipsetName)
     cnCIDR=fetch_cnip_data()
     for ip in cnCIDR:
-        outputFile.write('ipset -A %s %s\n' %(ipsetName, ip))
+        outputFile.write('ipset add %s %s\n' %(ipsetName, ip))
     
-    outputFile.write('ipset --save %s >/jffs/configs/china_ipset.conf\n' %ipsetName)
-    outputFile.write('ipset --destroy %s\n' %ipsetName)
+    outputFile.write('ipset save %s >/jffs/configs/china_ipset.conf\n' %ipsetName)
+    outputFile.write('ipset destroy %s\n' %ipsetName)
     outputFile.close
     
 def outputDNSMASQ(outputFileName='generated/dnsmasq.conf.add', localdns='223.5.5.5', remotedns='127.0.0.1#1081', chinadns='127.0.0.1#35353' , whiteFile='white.txt', blackFile='black.txt'):
