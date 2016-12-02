@@ -107,6 +107,14 @@ def outputDNSMASQ(outputFileName='generated/dnsmasq.conf.add', localdns='223.5.5
         outputFile.write('server=/%s/%s\n' %(line.strip(), localdns))
     
     outputFile.write('server=/#/%s\n' %chinadns)
+    
+    #4k iptv bridge, reference https://github.com/yunalan/Shanghai-Telecom-4k-iptv-with-merlin
+    outputFile.write('#4K IPTV VLAN TAG\n')
+    outputFile.write('dhcp-option-force=125,00:00:00:00:1a:02:06:48:47:57:2d:43:54:03:04:5a:58:48:4e:0a:02:20:00:0b:02:00:55:0d:02:00:2e\n')
+    outputFile.write('dhcp-option=15\n')
+    outputFile.write('dhcp-option=28\n')
+    outputFile.write('dhcp-option=60,00:00:01:06:68:75:61:71:69:6E:02:0A:48:47:55:34:32:31:4E:20:76:33:03:0A:48:47:55:34:32:31:4E:20:76:33:04:10:32:30:30:2E:55:59:59:2E:30:2E:41:2E:30:2E:53:48:05:04:00:01:00:50\n')
+
     outputFile.close()
 
 
